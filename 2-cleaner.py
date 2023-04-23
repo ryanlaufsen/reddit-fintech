@@ -12,12 +12,18 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from nltk import FreqDist
 import datetime as dt
+from datetime import datetime, timedelta
 import string
 from textblob import TextBlob
+import spacy
+from spacy import displacy
 
-
+nlp = spacy.load('en_core_web_sm')
 nltk.download('stopwords')
 nltk.download('wordnet')
+
+nlp = spacy.load('en_core_web_sm')
+
 
 df = pd.read_csv('daily_discussion_moves.csv')
 
@@ -30,7 +36,7 @@ df = df.sort_values(by='Date', ascending=False)
 
 
 grouped_comments_df = df.groupby(by='Date').apply(lambda x:x)
-grouped_comments_df = grouped_comments_df.drop('Date',axis = 1)
+#grouped_comments_df = grouped_comments_df.drop('Date',axis = 1)
 
 
 def preprocess_text(text):
@@ -70,70 +76,57 @@ def get_sentiment(text):
 
 # Apply sentiment analysis to 'Comment' column
 grouped_comments_df['Sentiment_Score'] = grouped_comments_df['Cleaned Comment'].apply(lambda x: get_sentiment(x))
-print(grouped_comments_df)
-#dirty_comment = []
-
-# append all the comments into a list
-#for comment in df['Comment']:
-    #dirty_comment.append(comment)
-
-# print(dirty_comment)
-# preprocessing string
-#list1 = dirty_comment
-#list1 = [str(i) for i in list1]
-#string_uncleand = ','.join(list1)
-
-
-# print(string_uncleand)
-
-# remove emoji,gif
-
-#def remove_emojis(text):
-    #return demoji.replace(text, '')
-
-
-#emojiless = re.sub(r'\\[a-zA-Z0-9]+', '', string_uncleand)
-#emojiless = re.sub(r'\[\w+\]\(emote\|t5_\w+\|\d+\)', '', emojiless)
-#emojiless = re.sub(r'\[\w+\]\(emote\|free_emotes_pack\|\w+\)', '', emojiless)
-
-#print(emojiless)
+#grouped_comments_df.to_csv('sample.csv', index=False)
+#print(grouped_comments_df)
 
 
 
-# tokenizing and cleaning strings
-#tokenizer = RegexpTokenizer('\w+|\$[\d\.]+|http\S+')
-#tokenized_string = tokenizer.tokenize(emojiless)
-#print(tokenized_string)
+import yfinance as yf
+#import data of stock in NASQUE and NYSE
+stock_df = pd.read_csv("C:\\Users\\fcars\\Desktop\\FINA4320 NLP project\\NYSE+NASDAQUE.csv")
+#print(stock_df)
+stocks_ticker = set(stock_df['Symbol'])
 
-#preproccing string - converting tokens into lowercase
-#lower_string_tokenized = [word.lower() for word in tokenized_string]
-#print(lower_string_tokenized)
+#print(stocks_ticker)
+stock_entity = set(stock_df['Name'])
+#print(type(grouped_comments_df['Cleaned Comment']))
+#print(stock_entity)
+#create a function to extract stock ticket or entity name
 
-#removing stopwords
-#nlp = en_core_web_sm.load()
-
-#all_stopwords = nlp.Defaults.stop_words
-
-#text = lower_string_tokenized
-#tokens_without_sw = [word for word in text if not word in all_stopwords]
-#print(tokens_without_sw)
-
-#normalizing words via lemmatizing
-
-#lemmatizer = WordNetLemmatizer()
-
-#lemmatized_tokens = ([lemmatizer.lemmatize(w) for w in tokens_without_sw])
+def extract_stock (text:str,directory):
+    to_string = text.split()
+    matches = []
+    for word in to_string:
+        if word.upper() in directory:
+            matches.append(word.upper())
+    return matches
 
 
-#store lemmatized words into a new variable
-#cleand_output = lemmatized_tokens
-#print(cleand_output)
+directory = stocks_ticker
+#grouped_comments_df.to_csv('sample.csv', index=False)
+grouped_comments_df['Stock_Mentioned'] = grouped_comments_df['Cleaned Comment'].apply(lambda x:
+                                                                                      extract_stock(x,directory))
+grouped_comments_df.to_csv('sample.csv', index=False)
 
-#print('Original length of words = ' , (len(string_uncleand)))
-#print("num of words after removing emotes and gif = ",(len(emojiless)))
-#print("num of words after removing tokeninzing and cleaning =",(len(tokenized_string)) )
-#print("num of words after reoving tokenizing, cleeaening and removing stop words = ",(len(tokens_without_sw)))
-#print("num of words after removing tokenizing, cleaning , removing stop words and lemmatized =",(len(lemmatized_tokens)))
-#print("num of words after final cleaning =",len(cleand_output))
 
-#Calculating polarity score of words
+
+#generate stock return of next day given date and ticker
+def get_next_day_return(ticker, date):
+    # Convert the date string to a datetime object
+    date = datetime.strptime(date, '%Y-%m-%d').date()
+
+    # Get the next day's date
+    next_day = date + timedelta(days=1)
+
+    # Get the stock data for the given ticker and date range
+    stock_data = yf.download(ticker, start=date, end=next_day)
+
+    # Calculate the daily return
+    daily_return = (stock_data['Adj Close'][next_day] / stock_data['Adj Close'][date]) - 1
+
+    # Return the daily return
+    return daily_return
+
+
+
+
