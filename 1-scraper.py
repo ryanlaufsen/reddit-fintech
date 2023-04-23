@@ -32,7 +32,7 @@ for submission in subreddit.search('flair_name:"Daily Discussion"', limit=None):
                 comments.append(comment.body)
                 
 # Write data to CSV file
-with open('daily_discussion_moves.csv', 'w', encoding='utf-8', newline='') as csvfile:
+with open('data/daily_discussion_moves.csv', 'w', encoding='utf-8', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['Title', 'Author', 'Comment'])
     for i in range(len(comments)):
