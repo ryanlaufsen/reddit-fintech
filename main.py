@@ -8,18 +8,13 @@ calc = importlib.import_module('5-calculator')
 df = pd.read_csv('data/daily_discussion_moves.csv').tail(5)
 
 # Extract stock tickers from raw comments
-df['Tickers'] = None
-for index, row in df.iterrows():
-    df.at[index, 'Tickers'] = extractor.get_tickers(row['Comment'])
+df['Tickers'] = df['Comment'].apply(
+    lambda x: extractor.get_tickers(x))
 
 # Convert post title into dates
 df['Date'] = pd.to_datetime(df['Title'].str[30:])
 
 df = df.sort_values(by='Date', ascending=False)
-
-# # Group by mentioned tickers and date
-# df = df.groupby(['Tickers', 'Date']).apply(lambda x: x)
-# df = df.drop('Date', axis=1)
 
 # Update the comment column with cleaned comment
 df['Cleaned Comment'] = df['Comment'].apply(
@@ -35,10 +30,7 @@ df = df[df['Tickers'].map(lambda d: len(d)) > 0]  # Remove rows with no ticker m
 # Convert datetime to string
 df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
 
-print(df[['Tickers', 'Sentiment Score', 'Date']])
-
-df['Actual Return'] = None
-for index, row in df.iterrows():
-    df.at[index, 'Actual Return'] = calc.get_next_day_return(row['Tickers'], row['Date'])
+df['Actual Return'] = df.apply(
+    lambda x: calc.get_next_day_return(x['Tickers'], x['Date']), axis=1)
 
 print(df[['Comment', 'Tickers', 'Sentiment Score', 'Actual Return', 'Date']])
