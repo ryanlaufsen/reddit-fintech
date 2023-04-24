@@ -19,6 +19,7 @@ end_date = datetime(2023, 3, 31)
 titles = []
 authors = []
 comments = []
+upvotes = []
 
 for submission in subreddit.search('flair_name:"Daily Discussion"', limit=None):
     if start_date <= datetime.fromtimestamp(submission.created_utc) <= end_date:
@@ -30,15 +31,11 @@ for submission in subreddit.search('flair_name:"Daily Discussion"', limit=None):
                 titles.append(submission.title)
                 authors.append(comment.author)
                 comments.append(comment.body)
+                upvotes.append(comment.score)
                 
 # Write data to CSV file
 with open('data/daily_discussion_moves.csv', 'w', encoding='utf-8', newline='') as csvfile:
     writer = csv.writer(csvfile)
-    writer.writerow(['Title', 'Author', 'Comment'])
+    writer.writerow(['Title', 'Author', 'Comment', 'Upvotes'])
     for i in range(len(comments)):
-        writer.writerow([titles[i], authors[i], comments[i]])
-
-
-
-
-
+        writer.writerow([titles[i], authors[i], comments[i], upvotes[i]])
