@@ -1,25 +1,8 @@
 import pandas as pd
 import re
-import nltk
 from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
-from textblob import TextBlob
-
-
-nltk.download('stopwords')
-nltk.download('wordnet')
-
-df = pd.read_csv('data/daily_discussion_moves.csv')
-
-# Convert post title into dates
-df['Date'] = pd.to_datetime(df['Title'].str[30:])
-
-df = df.sort_values(by='Date', ascending=False)
-
-grouped_comments_df = df.groupby(by='Date').apply(lambda x:x)
-grouped_comments_df = grouped_comments_df.drop('Date',axis = 1)
-
 
 def preprocess_text(text):
     # Remove emoji and gif
@@ -46,15 +29,3 @@ def preprocess_text(text):
     cleaned_output = ' '.join(lemmatized_tokens)
 
     return cleaned_output
-
-# Update the comment column with cleaned comment
-grouped_comments_df['Cleaned Comment'] = grouped_comments_df['Comment'].apply(lambda x: preprocess_text(x))
-
-# Define a function to perform sentiment analysis using TextBlob
-def get_sentiment(text):
-    blob = TextBlob(text)
-    return blob.sentiment.polarity
-
-# Apply sentiment analysis to 'Comment' column
-grouped_comments_df['Sentiment_Score'] = grouped_comments_df['Cleaned Comment'].apply(lambda x: get_sentiment(x))
-print(grouped_comments_df)
