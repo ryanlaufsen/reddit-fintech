@@ -3,13 +3,13 @@ import importlib
 cleaner = importlib.import_module('2-cleaner')
 extractor = importlib.import_module('3-extractor')
 analyzer = importlib.import_module('4-analyzer')
+calc = importlib.import_module('5-calculator')
 
-df = pd.read_csv('data/daily_discussion_moves.csv')
+df = pd.read_csv('data/daily_discussion_moves.csv').tail(5)
 
 # Extract stock tickers from raw comments
 df['Tickers'] = None
-
-for index, row in df.tail(5).iterrows():
+for index, row in df.iterrows():
     df.at[index, 'Tickers'] = extractor.get_tickers(row['Comment'])
 
 # Convert post title into dates
@@ -17,15 +17,28 @@ df['Date'] = pd.to_datetime(df['Title'].str[30:])
 
 df = df.sort_values(by='Date', ascending=False)
 
-grouped_comments_df = df.groupby(by='Date').apply(lambda x: x)
-grouped_comments_df = grouped_comments_df.drop('Date', axis=1)
+# # Group by mentioned tickers and date
+# df = df.groupby(['Tickers', 'Date']).apply(lambda x: x)
+# df = df.drop('Date', axis=1)
 
 # Update the comment column with cleaned comment
-grouped_comments_df['Cleaned Comment'] = grouped_comments_df['Comment'].apply(
+df['Cleaned Comment'] = df['Comment'].apply(
     lambda x: cleaner.preprocess_text(x))
 
 # Apply sentiment analysis to 'Comment' column
-grouped_comments_df['Sentiment Score'] = grouped_comments_df['Cleaned Comment'].apply(
+df['Sentiment Score'] = df['Cleaned Comment'].apply(
     lambda x: analyzer.get_sentiment(x))
-print(grouped_comments_df[['Comment', 'Tickers', 'Sentiment Score']])
 
+# Calculate actual daily returns
+df = df[df['Tickers'].map(lambda d: len(d)) > 0]  # Remove rows with no ticker mentions
+
+# Convert datetime to string
+df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
+
+print(df[['Tickers', 'Sentiment Score', 'Date']])
+
+df['Actual Return'] = None
+for index, row in df.iterrows():
+    df.at[index, 'Actual Return'] = calc.get_next_day_return(row['Tickers'], row['Date'])
+
+print(df[['Comment', 'Tickers', 'Sentiment Score', 'Actual Return', 'Date']])
