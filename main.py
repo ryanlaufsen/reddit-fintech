@@ -4,9 +4,8 @@ cleaner = importlib.import_module('2-cleaner')
 extractor = importlib.import_module('3-extractor')
 analyzer = importlib.import_module('4-analyzer')
 calc = importlib.import_module('5-calculator')
-import csv
 
-df = pd.read_csv('data/daily_discussion_moves.csv')
+df = pd.read_csv('data/daily_discussion_moves.csv').sample(n=20)
 
 # Extract stock tickers from raw comments
 df['Ticker'] = df['Comment'].apply(
@@ -16,7 +15,7 @@ df = df.explode('Ticker')
 # Convert post title into dates
 df['Date'] = pd.to_datetime(df['Title'].str[30:])
 
-df = df.sort_values(by='Date', ascending=False)
+df = df.sort_values(by='Date', ascending=True)
 
 # Update the comment column with cleaned comment
 df['Cleaned Comment'] = df['Comment'].apply(
@@ -30,9 +29,6 @@ df['Sentiment Score'] = df['Cleaned Comment'].apply(
 df['Adjusted Sentiment Score'] = df.apply(
     lambda x: x['Upvotes'] * x['Sentiment Score'], axis=1)
 
-# Sum sentiment, grouping by ticker and date
-df.groupby(['Ticker', 'Date']).agg({'Adjusted Sentiment Score': 'sum'})
-
 # Calculate actual daily returns
 df = df[df['Ticker'].notnull()]  # Remove rows with no ticker mentions
 
@@ -42,6 +38,9 @@ df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
 df['Actual Return'] = df.apply(
     lambda x: calc.get_next_day_return(x['Ticker'], x['Date']), axis=1)
 
-# print(df[['Ticker', 'Adjusted Sentiment Score', 'Actual Return', 'Date']])
+# Sum sentiment, grouping by ticker and date
+df = df.groupby(['Ticker', 'Date']).agg({'Adjusted Sentiment Score': 'sum', 'Actual Return': 'mean'})
 
-df.to_csv('data/for_regression.csv')
+print(df[['Ticker', 'Adjusted Sentiment Score', 'Actual Return', 'Date']])
+
+# df.to_csv('data/for_regression.csv')
