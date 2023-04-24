@@ -77,7 +77,7 @@ def get_sentiment(text):
 # Apply sentiment analysis to 'Comment' column
 grouped_comments_df['Sentiment_Score'] = grouped_comments_df['Cleaned Comment'].apply(lambda x: get_sentiment(x))
 #grouped_comments_df.to_csv('sample.csv', index=False)
-#print(grouped_comments_df)
+print(grouped_comments_df)
 
 
 
