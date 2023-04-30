@@ -73,6 +73,22 @@ grouped_comments_df['Sentiment_Score'] = grouped_comments_df['Cleaned Comment'].
 print(grouped_comments_df)
 #dirty_comment = []
 
+
+def get_next_day_return(ticker, date):
+    # Convert the date string to a datetime object
+    date = datetime.strptime(date, '%Y-%m-%d').date()
+
+    # Get the next day's date
+    next_day = date + timedelta(days=1)
+
+    # Get the stock data for the given ticker and date range
+    stock_data = yf.download(ticker, start=date, end=next_day)
+
+    # Calculate the daily return
+    daily_return = (stock_data['Adj Close'][next_day] / stock_data['Adj Close'][date]) - 1
+
+    # Return the daily return
+    return daily_return
 # append all the comments into a list
 #for comment in df['Comment']:
     #dirty_comment.append(comment)

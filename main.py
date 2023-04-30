@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import importlib
 cleaner = importlib.import_module('2-cleaner')
@@ -5,8 +6,13 @@ extractor = importlib.import_module('3-extractor')
 analyzer = importlib.import_module('4-analyzer')
 calc = importlib.import_module('5-calculator')
 import csv
+from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 df = pd.read_csv('data/daily_discussion_moves.csv')
+
+#df = df.head(n=1000)
 
 # Extract stock tickers from raw comments
 df['Ticker'] = df['Comment'].apply(
@@ -42,6 +48,20 @@ df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
 df['Actual Return'] = df.apply(
     lambda x: calc.get_next_day_return(x['Ticker'], x['Date']), axis=1)
 
-# print(df[['Ticker', 'Adjusted Sentiment Score', 'Actual Return', 'Date']])
+#print(df[['Ticker', 'Adjusted Sentiment Score', 'Actual Return', 'Date']])
 
-df.to_csv('data/for_regression.csv')
+y = df['Actual Return']
+
+X = df['Adjusted Sentiment Score']
+X_train , X_test, y_train, y_test = train_test_split(X,y,test_size =  0.2, random_state = 42)
+
+model = LinearRegression()
+model.fit(X_train,y_train)
+#
+y_pred = model.predict(X_test)
+#
+mse = mean_squared_error(y_test, y_pred)
+rmse = np.sqrt(mse)
+r_squared = model.score(X_test, y_test)
+print("Root Mean Squared Error:", rmse)
+print("R-squared:", r_squared)
