@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import importlib
-datawriter = importlib.import_module('datawriter')
+datawriter = importlib.import_module('utilities.datawriter')
 
 # Create directories for organized storage of data and results
 if not os.path.exists('data'):

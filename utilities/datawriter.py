@@ -1,15 +1,15 @@
 import pandas as pd
 import importlib
-cleaner = importlib.import_module('2-cleaner')
-extractor = importlib.import_module('3-extractor')
-analyzer = importlib.import_module('4-analyzer')
-calc = importlib.import_module('5-calculator')
+cleaner = importlib.import_module('utilities.2-cleaner')
+extractor = importlib.import_module('utilities.3-extractor')
+analyzer = importlib.import_module('utilities.4-analyzer')
+calc = importlib.import_module('utilities.5-calculator')
 
 def write(start_index, chunk_size, f):
     df = pd.read_csv(f,
                     skiprows=None if start_index == 0 else range(1,start_index+1),
                     nrows=chunk_size,
-                    on_bad_lines='warn')
+                    on_bad_lines='warn').head(1)
 
     # Extract stock tickers from raw comments
     df['Ticker'] = df['Comment'].apply(
