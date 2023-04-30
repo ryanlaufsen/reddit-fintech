@@ -5,8 +5,8 @@ extractor = importlib.import_module('3-extractor')
 analyzer = importlib.import_module('4-analyzer')
 calc = importlib.import_module('5-calculator')
 
-def write(start_index, chunk_size):
-    df = pd.read_csv('data/daily_discussion_moves.csv',
+def write(start_index, chunk_size, f):
+    df = pd.read_csv(f,
                     skiprows=None if start_index == 0 else range(1,start_index+1),
                     nrows=chunk_size,
                     on_bad_lines='warn')
