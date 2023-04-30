@@ -44,4 +44,8 @@ def write(start_index, chunk_size):
     df['Actual Return'] = df.apply(
         lambda x: calc.get_next_day_return(x['Ticker'], x['Date']), axis=1)
 
-    df.to_csv(f'for_regression/for_regression_{start_index}_{start_index + chunk_size - 1}.csv')
+    end_index = start_index + chunk_size - 1
+    if end_index > len(df):
+        end_index = len(df)
+
+    df.to_csv(f'for_regression/for_regression_{start_index}_{end_index}.csv')
