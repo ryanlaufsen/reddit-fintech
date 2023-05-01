@@ -14,7 +14,7 @@ def write(start_index, chunk_size, f):
     df = pd.read_csv(f,
                     skiprows=None if start_index == 0 else range(1,start_index+1),
                     nrows=chunk_size,
-                    on_bad_lines='warn').head(1)
+                    on_bad_lines='warn')
 
     # Extract stock tickers from raw comments
     df['Ticker'] = df['Comment'].apply(
