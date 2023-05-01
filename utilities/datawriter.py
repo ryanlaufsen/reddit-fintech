@@ -8,7 +8,8 @@ calc = importlib.import_module('utilities.5-calculator')
 def write(start_index, chunk_size, f):
     '''
     Puts together a processed dataframe for later modelling.
-    Returns an object with the frame and end_index (i.e., index of last row).
+    Returns an object with the frame and end_index (i.e., index of last row),
+    or None if no tickers are discovered in rows passed in for processing.
     '''
 
     df = pd.read_csv(f,
