@@ -39,17 +39,28 @@ df = df.drop_duplicates(keep='first')
 
 reg_df = df[['Adjusted Sentiment Score', 'Actual Return']]
 reg_df = reg_df.dropna()
+reg_df['Price Direction'] = reg_df['Actual Return'].apply(
+    lambda x: 1 if x > 0 else -1 if x < 0 else 0
+)
 
 corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Actual Return'])
 
-# Train on 80% of the data, test on remaining 20%
-X_train, X_test, y_train, y_test = regressions.train_and_test(reg_df, 0.2, 42) # Random state is set to an int for reproducible results
+y = reg_df['Actual Return']
+X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
+
+# Train on 80% of the data, test on remaining 20%. Random state is set to an int for reproducible results.
+X_train, X_test, y_train, y_test = regressions.train_and_test(X, y, 0.2, 42)
 
 linear_regression = regressions.linear_reg(X_train, X_test, y_train, y_test)
-lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test, 0.1)
-ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test, 0.1)
+# lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test, 0.1)
+# ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test, 0.1)
+
+y = reg_df['Price Direction']
+X_train, X_test, y_train, y_test = regressions.train_and_test(X, y, 0.2, 42)
+logistic_regression = regressions.logistic_reg(X_train, X_test, y_train, y_test)
 
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)
-print("Lasso Regression:", lasso_regression)
-print("Ridge Regression:", ridge_regression)
+# print("Lasso Regression:", lasso_regression)
+# print("Ridge Regression:", ridge_regression)
+print("Logistic Regression:", logistic_regression)
