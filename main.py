@@ -4,21 +4,25 @@ import glob
 import importlib
 datawriter = importlib.import_module('utilities.datawriter')
 
-# Create directories for organized storage of data and results
-if not os.path.exists('data'):
-    os.makedirs('data')
-    print('Created /data directory.')
+# Configure directory names for data download, semi-processed files, and final results
+config_dirs = {
+    'data': 'data',
+    'processed': 'processed',
+    'results': 'results'
+}
 
-if not os.path.exists('for_regression'):
-    os.makedirs('for_regression')
-    print('Created /for_regression directory.')
+# Create directories
+for dir in config_dirs:
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+        print(f'Created /{dir} directory.')
 
 # Pause / resume controls. Parameters can be edited depending on hardware capabilities
-f = 'data/daily_discussion_moves.csv'
+f = f'{config_dirs["data"]}/daily_discussion_moves.csv'
 starting_index = 0
 chunk_size = 100
 
 for i in range(starting_index, len(pd.read_csv(f)), chunk_size):
     datawriter.write(i, chunk_size, f)
 
-datawriter.consolidate(glob.glob('for_regression/*.csv'))
+df = datawriter.consolidate(glob.glob(f'{config_dirs["processed"]}/*.csv'))
