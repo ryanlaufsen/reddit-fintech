@@ -13,15 +13,11 @@ def get_next_day_return(ticker, date):
     date = datetime.strptime(date, '%Y-%m-%d').date()
 
     # Get the stock data for the given ticker and date range
-    stock_data = yf.download(ticker,
-                             start=date,
-                             end=next_two_business_days(date),
-                             period='5d',
-                             progress=False,
-                             ignore_tz=True,
-                             repair=True)
+    stock_data = yf.Ticker(ticker).history(start=date,
+                                           end=next_two_business_days(date),
+                                           repair=True)
     if stock_data.empty:
         return None
     
     # Calculate the daily return
-    return (stock_data['Adj Close'][1] / stock_data['Adj Close'][0]) - 1
+    return (stock_data['Close'][1] / stock_data['Close'][0]) - 1
