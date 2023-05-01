@@ -25,7 +25,7 @@ def write(start_index, chunk_size, f):
     # Calculate actual daily returns
     df = df[df['Ticker'].notnull()]  # Remove rows with no ticker mentions
     if df.empty:
-        return
+        return df
 
     # Convert post title into dates
     df['Date'] = pd.to_datetime(df['Title'].str[30:])
@@ -49,12 +49,8 @@ def write(start_index, chunk_size, f):
 
     df['Actual Return'] = df.apply(
         lambda x: calc.get_next_day_return(x['Ticker'], x['Date']), axis=1)
-
-    end_index = start_index + chunk_size - 1
-    if end_index > len(df):
-        end_index = len(df)
-
-    return {'frame': df, 'end_index': end_index}
+    
+    return df
 
 def consolidate(files):
     '''
