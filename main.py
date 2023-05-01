@@ -4,20 +4,20 @@ import glob
 import importlib
 datawriter = importlib.import_module('utilities.datawriter')
 
-# Configure directory names for data download, semi-processed files, and final results
+# Configure directory names for data download, processed files, and final results
 config_dirs = {
     'data': 'data',
     'processed': 'processed',
     'results': 'results'
 }
 
-# Create directories
+# Create aforementioned directories
 for dir in config_dirs:
     if not os.path.exists(dir):
         os.makedirs(dir)
         print(f'Created /{dir} directory.')
 
-# Pause / resume controls. Parameters can be edited depending on hardware capabilities
+# Pause / resume controls. Parameters can be edited depending on hardware / network capabilities
 f = f'{config_dirs["data"]}/daily_discussion_moves.csv'
 start_index = 0
 chunk_size = 100
