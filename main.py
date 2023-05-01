@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+import glob
 import importlib
 datawriter = importlib.import_module('utilities.datawriter')
 
@@ -19,3 +20,5 @@ chunk_size = 100
 
 for i in range(starting_index, len(pd.read_csv(f)), chunk_size):
     datawriter.write(i, chunk_size, f)
+
+datawriter.consolidate(glob.glob('for_regression/*.csv'))

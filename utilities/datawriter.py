@@ -49,3 +49,17 @@ def write(start_index, chunk_size, f):
         end_index = len(df)
 
     df.to_csv(f'for_regression/for_regression_{start_index}_{end_index}.csv')
+
+def consolidate(files):
+    '''
+    Consolidates files generated with datawriter.write() by continuously appending into one large dataframe.
+    Returns a pandas dataframe.
+    '''
+
+    df_list = []
+
+    for file in files:
+        df = pd.read_csv(file, index_col=None, header=0)
+        df_list.append(df)
+
+    return pd.concat(df_list, axis=0, ignore_index=True)
