@@ -6,6 +6,11 @@ analyzer = importlib.import_module('utilities.4-analyzer')
 calc = importlib.import_module('utilities.5-calculator')
 
 def write(start_index, chunk_size, f):
+    '''
+    Puts together a processed dataframe for later modelling.
+    Returns an object with the frame and end_index (i.e., index of last row).
+    '''
+
     df = pd.read_csv(f,
                     skiprows=None if start_index == 0 else range(1,start_index+1),
                     nrows=chunk_size,
@@ -48,7 +53,7 @@ def write(start_index, chunk_size, f):
     if end_index > len(df):
         end_index = len(df)
 
-    df.to_csv(f'for_regression/for_regression_{start_index}_{end_index}.csv')
+    return {'frame': df, 'end_index': end_index}
 
 def consolidate(files):
     '''
