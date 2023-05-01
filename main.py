@@ -46,8 +46,8 @@ corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Actual Return'])
 X_train, X_test, y_train, y_test = regressions.train_and_test(reg_df, 0.2, 42) # Random state is set to an int for reproducible results
 
 linear_regression = regressions.linear_reg(X_train, X_test, y_train, y_test)
-lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test)
-ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test)
+lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test, 0.1)
+ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test, 0.1)
 
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)

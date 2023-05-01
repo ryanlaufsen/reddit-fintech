@@ -1,7 +1,7 @@
 import pandas as pd
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression, Lasso, Ridge
+from sklearn.linear_model import LinearRegression, Lasso, Ridge, LogisticRegression
 
 def train_and_test(df, size, state):
     y = df['Actual Return']
@@ -26,8 +26,8 @@ def linear_reg(X_train, X_test, y_train, y_test):
     }
 
 
-def lasso_reg(X_train, X_test, y_train, y_test):
-    model = Lasso(alpha=0.1)
+def lasso_reg(X_train, X_test, y_train, y_test, a):
+    model = Lasso(alpha=a)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     r_sq = model.score(X_test, y_test)
@@ -39,8 +39,8 @@ def lasso_reg(X_train, X_test, y_train, y_test):
     }
 
 
-def ridge_reg(X_train, X_test, y_train, y_test):
-    model = Ridge(alpha=0.1)
+def ridge_reg(X_train, X_test, y_train, y_test, a):
+    model = Ridge(alpha=a)
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
     r_sq = model.score(X_test, y_test)
