@@ -45,6 +45,7 @@ reg_df['Price Direction'] = reg_df['Actual Return'].apply(
 
 corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Actual Return'])
 
+# Arrays for simple linear, lasso, and ridge regressions
 y = reg_df['Actual Return']
 X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
 
@@ -52,15 +53,19 @@ X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
 X_train, X_test, y_train, y_test = regressions.train_and_test(X, y, 0.2, 42)
 
 linear_regression = regressions.linear_reg(X_train, X_test, y_train, y_test)
-# lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test, 0.1)
-# ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test, 0.1)
+lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test, 0.1)
+ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test, 0.1)
 
+polynomial_regression = regressions.poly_reg(X_train, X_test, y_train, y_test)
+
+# Arrays for logistic regression
 y = reg_df['Price Direction']
 X_train, X_test, y_train, y_test = regressions.train_and_test(X, y, 0.2, 42)
 logistic_regression = regressions.logistic_reg(X_train, X_test, y_train, y_test)
 
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)
-# print("Lasso Regression:", lasso_regression)
-# print("Ridge Regression:", ridge_regression)
+print("Lasso Regression:", lasso_regression)
+print("Ridge Regression:", ridge_regression)
 print("Logistic Regression:", logistic_regression)
+print("Polynomial Regression:", polynomial_regression)
