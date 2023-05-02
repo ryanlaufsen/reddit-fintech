@@ -73,7 +73,7 @@ test_size = 0.2
 random_state = 42
 alpha = 0.1 # Regularization parameter for lasso and ridge regressions
 
-# Arrays for simple linear, lasso, ridge, and logistic regressions. Regress Adjusted Sentiment Score on Stock Return
+# Regress Volume Change on Adjusted Sentiment Score. Define arrays for simple linear, lasso, ridge, and logistic regressions.
 X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
 y = reg_df['Stock Return']
 y_log = reg_df['Price Direction']
@@ -81,7 +81,26 @@ y_log = reg_df['Price Direction']
 corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression = run_regressions(
     X, y, y_log, test_size, random_state, alpha)
 
-print('Regressing [\'Adjusted Sentiment Score\'] on [\'Stock Return\']')
+print('Regressing [\'Stock Return\'] on [\'Adjusted Sentiment Score\']')
+print("Correlation Coefficient:", corr)
+print("Linear Regression:", linear_regression)
+print("Lasso Regression:", lasso_regression)
+print("Ridge Regression:", ridge_regression)
+print("Logistic Regression:", logistic_regression)
+print("Polynomial Regression:", polynomial_regression)
+
+reg_df['Volume Change Direction'] = reg_df['Volume Change'].apply(
+    lambda x: 1 if x > 0 else -1 if x < 0 else 0
+)
+
+# Regress Volume Change on Adjusted Sentiment Score. Define arrays for simple linear, lasso, ridge, and logistic regressions.
+y = reg_df['Volume Change']
+y_log = reg_df['Volume Change Direction']
+
+corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression = run_regressions(
+    X, y, y_log, test_size, random_state, alpha)
+
+print('Regressing [\'Volume Change\'] on [\'Adjusted Sentiment Score\']')
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)
 print("Lasso Regression:", lasso_regression)
