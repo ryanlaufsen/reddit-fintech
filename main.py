@@ -43,26 +43,45 @@ reg_df['Price Direction'] = reg_df['Stock Return'].apply(
     lambda x: 1 if x > 0 else -1 if x < 0 else 0
 )
 
-corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Stock Return'])
 
-# Arrays for simple linear, lasso, and ridge regressions
-y = reg_df['Stock Return']
-X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
+def run_regressions(X, y, y_log, test_size, random_state, alpha):
+    corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Stock Return'])
+
+    X_train, X_test, y_train, y_test = regressions.train_and_test(
+        X, y, test_size, random_state)
+
+    linear_regression = regressions.linear_reg(
+        X_train, X_test, y_train, y_test)
+    lasso_regression = regressions.lasso_reg(
+        X_train, X_test, y_train, y_test, alpha)
+    ridge_regression = regressions.ridge_reg(
+        X_train, X_test, y_train, y_test, alpha)
+
+    polynomial_regression = regressions.poly_reg(
+        X_train, X_test, y_train, y_test)
+
+    # Change arrays for logistic regression
+    X_train, X_test, y_train, y_test = regressions.train_and_test(
+        X, y_log, test_size, random_state)
+    logistic_regression = regressions.logistic_reg(
+        X_train, X_test, y_train, y_test)
+
+    return corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression
 
 # Train on 80% of the data, test on remaining 20%. Random state is set to an int for reproducible results.
-X_train, X_test, y_train, y_test = regressions.train_and_test(X, y, 0.2, 42)
+test_size = 0.2
+random_state = 42
+alpha = 0.1 # Regularization parameter for lasso and ridge regressions
 
-linear_regression = regressions.linear_reg(X_train, X_test, y_train, y_test)
-lasso_regression = regressions.lasso_reg(X_train, X_test, y_train, y_test, 0.1)
-ridge_regression = regressions.ridge_reg(X_train, X_test, y_train, y_test, 0.1)
+# Arrays for simple linear, lasso, ridge, and logistic regressions. Regress Adjusted Sentiment Score on Stock Return
+X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
+y = reg_df['Stock Return']
+y_log = reg_df['Price Direction']
 
-polynomial_regression = regressions.poly_reg(X_train, X_test, y_train, y_test)
+corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression = run_regressions(
+    X, y, y_log, test_size, random_state, alpha)
 
-# Arrays for logistic regression
-y = reg_df['Price Direction']
-X_train, X_test, y_train, y_test = regressions.train_and_test(X, y, 0.2, 42)
-logistic_regression = regressions.logistic_reg(X_train, X_test, y_train, y_test)
-
+print('Regressing [\'Adjusted Sentiment Score\'] on [\'Stock Return\']')
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)
 print("Lasso Regression:", lasso_regression)
