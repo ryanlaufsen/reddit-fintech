@@ -20,4 +20,7 @@ def get_next_day_return(ticker, date):
         return None
     
     # Calculate the daily return
-    return (stock_data['Close'][1] / stock_data['Close'][0]) - 1
+    return {
+        'rtn': (stock_data['Close'][1] / stock_data['Close'][0]) - 1,
+        'vol_chg': (stock_data['Volume'][1] / stock_data['Volume'][0]) - 1
+    }

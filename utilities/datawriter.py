@@ -47,8 +47,11 @@ def write(start_index, chunk_size, f):
     # Convert datetime to string
     df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
 
-    df['Actual Return'] = df.apply(
-        lambda x: calc.get_next_day_return(x['Ticker'], x['Date']), axis=1)
+    df['Stock Return'] = df.apply(
+        lambda x: calc.get_next_day_return(x['Ticker'], x['Date'])['rtn'], axis=1)
+    
+    df['Stock Volume Change'] = df.apply(
+        lambda x: calc.get_next_day_return(x['Ticker'], x['Date'])['vol_chg'], axis=1)
     
     return df
 

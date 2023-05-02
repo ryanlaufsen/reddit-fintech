@@ -34,19 +34,19 @@ config_dirs = {
 # Concatenate processed data and perform additional pre-processing
 df = datawriter.consolidate(glob.glob(f'{config_dirs["processed"]}/*.csv'))
 df = df.sort_values(by=['Date'])
-df = df[['Title', 'Date', 'Comment', 'Adjusted Sentiment Score', 'Actual Return']] # ['Comment'] is only kept here for de-duplicating purposes
+df = df[['Title', 'Date', 'Comment', 'Adjusted Sentiment Score', 'Stock Return']] # ['Comment'] is only kept here for de-duplicating purposes
 df = df.drop_duplicates(keep='first')
 
-reg_df = df[['Adjusted Sentiment Score', 'Actual Return']]
+reg_df = df[['Adjusted Sentiment Score', 'Stock Return']]
 reg_df = reg_df.dropna()
-reg_df['Price Direction'] = reg_df['Actual Return'].apply(
+reg_df['Price Direction'] = reg_df['Stock Return'].apply(
     lambda x: 1 if x > 0 else -1 if x < 0 else 0
 )
 
-corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Actual Return'])
+corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Stock Return'])
 
 # Arrays for simple linear, lasso, and ridge regressions
-y = reg_df['Actual Return']
+y = reg_df['Stock Return']
 X = reg_df['Adjusted Sentiment Score'].values.reshape(-1, 1)
 
 # Train on 80% of the data, test on remaining 20%. Random state is set to an int for reproducible results.
