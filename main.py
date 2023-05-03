@@ -27,7 +27,7 @@ config_dirs = {
 #     df_part = datawriter.write(i, chunk_size, f)
 #     if not df_part.empty:
 #         df_part.to_csv(f'{config_dirs["processed"]}/processed_{i}_{i + chunk_size}.csv')
-#         print(f'Processed and saved rows {i} to {i + chunk_size}.'
+#         print(f'Processed and saved rows {i} to {i + chunk_size}. '
 #               f'({len(df_part)} {"tickers" if len(df_part) > 1 else "ticker"} found.)'
 #               )
 
@@ -38,7 +38,6 @@ df = df[['Title', 'Date', 'Comment', 'Adjusted Sentiment Score', 'Stock Return']
 df = df.drop_duplicates(keep='first')
 
 reg_df = df[['Adjusted Sentiment Score', 'Stock Return']]
-reg_df = reg_df.dropna()
 reg_df['Price Direction'] = reg_df['Stock Return'].apply(
     lambda x: 1 if x > 0 else -1 if x < 0 else 0
 )
