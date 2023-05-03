@@ -22,13 +22,13 @@ def write(start_index, chunk_size, f):
         lambda x: extractor.get_tickers(x))
     df = df.explode('Ticker')
 
-    # Calculate actual daily returns
-    df = df[df['Ticker'].notnull()]  # Remove rows with no ticker mentions
+    # Remove rows with no ticker mentions
+    df = df[df['Ticker'].notnull()]  
     if df.empty:
         return df
 
-    # Convert post title into dates
-    df['Date'] = pd.to_datetime(df['Title'].str[30:])
+    # Convert post title into datetime strings
+    df['Date'] = pd.to_datetime(df['Title'].str[30:]).dt.strftime('%Y-%m-%d')
 
     df = df.sort_values(by='Date', ascending=True)
 
@@ -44,12 +44,11 @@ def write(start_index, chunk_size, f):
     df['Adjusted Sentiment Score'] = df.apply(
         lambda x: x['Upvotes'] * x['Sentiment Score'], axis=1)
 
-    # Convert datetime to string
-    df['Date'] = df['Date'].dt.strftime('%Y-%m-%d')
-
+    # Calculate actual daily returns
     df['Stock Return'] = df.apply(
         lambda x: calc.get_next_day_return(x['Ticker'], x['Date'])['rtn'], axis=1)
     
+    # Calculate daily volume change
     df['Stock Volume Change'] = df.apply(
         lambda x: calc.get_next_day_return(x['Ticker'], x['Date'])['vol_chg'], axis=1)
     
