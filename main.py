@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import glob
 import importlib
@@ -12,36 +13,37 @@ config_dirs = {
     'results': 'results'
 }
 
-# # Create aforementioned directories
-# for dir in config_dirs:
-#     if not os.path.exists(dir):
-#         os.makedirs(dir)
-#         print(f'Created /{dir} directory.')
+# Create aforementioned directories
+for dir in config_dirs:
+    if not os.path.exists(dir):
+        os.makedirs(dir)
+        print(f'Created /{dir} directory.')
 
-# # Pause / resume controls. Parameters can be edited depending on hardware / network capabilities
-# f = f'{config_dirs["data"]}/daily_discussion_moves.csv'
-# start_index = 0
-# chunk_size = 100
+# Pause / resume controls. Parameters can be edited depending on hardware / network capabilities
+f = f'{config_dirs["data"]}/daily_discussion_moves.csv'
+start_index = 0
+chunk_size = 100
 
-# for i in range(start_index, len(pd.read_csv(f)), chunk_size):
-#     df_part = datawriter.write(i, chunk_size, f)
-#     if not df_part.empty:
-#         df_part.to_csv(f'{config_dirs["processed"]}/processed_{i}_{i + chunk_size}.csv')
-#         print(f'Processed and saved rows {i} to {i + chunk_size}. '
-#               f'({len(df_part)} {"tickers" if len(df_part) > 1 else "ticker"} found.)'
-#               )
+for i in range(start_index, len(pd.read_csv(f)), chunk_size):
+    df_part = datawriter.write(i, chunk_size, f)
+    if not df_part.empty:
+        df_part.to_csv(f'{config_dirs["processed"]}/processed_{i}_{i + chunk_size}.csv')
+        print(f'Processed and saved rows {i} to {i + chunk_size}. '
+              f'({len(df_part)} {"tickers" if len(df_part) > 1 else "ticker"} found.)'
+              )
 
 # Concatenate processed data and perform additional pre-processing
 df = datawriter.consolidate(glob.glob(f'{config_dirs["processed"]}/*.csv'))
 df = df.sort_values(by=['Date'])
-df = df[['Title', 'Date', 'Comment', 'Adjusted Sentiment Score', 'Stock Return']] # ['Comment'] is only kept here for de-duplicating purposes
+df = df[['Title', 'Date', 'Comment', 'Adjusted Sentiment Score', 'Stock Return', 'Stock Volume Change']] # ['Comment'] is only kept here for de-duplicating purposes
 df = df.drop_duplicates(keep='first')
+df = df.replace([np.inf, -np.inf], np.nan)
+df = df.dropna()
 
-reg_df = df[['Adjusted Sentiment Score', 'Stock Return']]
+reg_df = df[['Adjusted Sentiment Score', 'Stock Return', 'Stock Volume Change']]
 reg_df['Price Direction'] = reg_df['Stock Return'].apply(
     lambda x: 1 if x > 0 else -1 if x < 0 else 0
 )
-
 
 def run_regressions(X, y, y_log, test_size, random_state, alpha):
     corr = reg_df['Adjusted Sentiment Score'].corr(reg_df['Stock Return'])
@@ -88,13 +90,13 @@ print("Ridge Regression:", ridge_regression)
 print("Logistic Regression:", logistic_regression)
 print("Polynomial Regression:", polynomial_regression)
 
-reg_df['Volume Change Direction'] = reg_df['Volume Change'].apply(
+reg_df['Stock Volume Change Direction'] = reg_df['Stock Volume Change'].apply(
     lambda x: 1 if x > 0 else -1 if x < 0 else 0
 )
 
 # Regress Volume Change on Adjusted Sentiment Score. Define arrays for simple linear, lasso, ridge, and logistic regressions.
-y = reg_df['Volume Change']
-y_log = reg_df['Volume Change Direction']
+y = reg_df['Stock Volume Change']
+y_log = reg_df['Stock Volume Change Direction']
 
 corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression = run_regressions(
     X, y, y_log, test_size, random_state, alpha)
