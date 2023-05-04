@@ -13,7 +13,10 @@ def get_sentiment(text):
 
     classifier = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer)
 
-    return classifier(text)
+    sentiment_result = classifier(text)
+    top_sentiment = max(sentiment_result, key=lambda x: x['score']) # Get the sentiment with the higher score
+    polarity = 1 if top_sentiment['label'] == 'positive' else -1
+    return top_sentiment['score'] * polarity
 
 for file in files:
     df = pd.read_csv(file, index_col=None, header=0)
