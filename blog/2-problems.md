@@ -1,4 +1,4 @@
-# 3. Wrenching Meaning From Chaos — How we selected our way of doing things
+# 2. Wrenching Meaning From Chaos — How we selected our way of doing things
 
 ## The problem
 When it came time to pick out mentions of stock symbols in the Reddit comments, we explored the possibility of using NER (named entity recognition). As such, we attempted to build a recognizer using NLTK and [SpaCy library](https://spacy.io/), but we quickly ran into trouble. Although stock symbols are key elements in the text of Reddit comments, we discovered that content on Reddit is quite deviant from what one would consider functional dialogue. There were far too many mentions of various entities, such the names of people's dogs, wives, and neighbours. (Interestingly, many comments made reference to the same few recurring figures in the world of finance and stock market trading. These popular figures went by a myriad of names: For example, Jerome Powell, the Chair of the Federal Reserve, is known to Redditors as "J-Pow", the "Money Printer", "The Fedfather", and "Printer-in-Chief.")
@@ -17,9 +17,7 @@ To show members of WSB I was cool
 But when I lost $10k in one day to CPI, I was sad but fck it was something to do.
 ```
 
-The above string, when cleaned, tokenized, and lemmatized, then run through this code:
-```python
-for index, row in tickers.iterrows():
-        for ticker in row.values:
-            if ticker in comment:
-                mentioned_tickers.append(ticker)
+## Another bonus problem
+FRC got delisted as we were running the model on updated (i.e., improved and rescraped) data.
+
+We realized that companies at risk of being delisted are frequently discussed shortly before the actual delisting event. However, we are not able to access price history of delisted companies on Yahoo! Finance (via the YFinance API).
