@@ -82,7 +82,7 @@ y_log = reg_df['Price Direction']
 corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression = run_regressions(
     X, y, y_log, test_size, random_state, alpha)
 
-print('Regressing [\'Stock Return\'] on [\'Adjusted Sentiment Score\']')
+print('\nRegressing [\'Stock Return\'] on [\'Adjusted Sentiment Score\']')
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)
 print("Lasso Regression:", lasso_regression)
@@ -101,7 +101,7 @@ y_log = reg_df['Stock Volume Change Direction']
 corr, linear_regression, lasso_regression, ridge_regression, logistic_regression, polynomial_regression = run_regressions(
     X, y, y_log, test_size, random_state, alpha)
 
-print('Regressing [\'Volume Change\'] on [\'Adjusted Sentiment Score\']')
+print('\nRegressing [\'Volume Change\'] on [\'Adjusted Sentiment Score\']')
 print("Correlation Coefficient:", corr)
 print("Linear Regression:", linear_regression)
 print("Lasso Regression:", lasso_regression)
