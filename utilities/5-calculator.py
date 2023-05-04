@@ -16,8 +16,11 @@ def get_next_day_return(ticker, date):
     stock_data = yf.Ticker(ticker).history(start=date,
                                            end=next_two_business_days(date),
                                            repair=True)
-    if stock_data.empty:
-        return None
+    if stock_data.empty or stock_data.isnull().values.any() == None:
+        return {
+            'rtn': None,
+            'vol_chg': None
+        }
     
     # Calculate the daily return
     return {

@@ -52,6 +52,8 @@ def write(start_index, chunk_size, f):
     df['Stock Volume Change'] = df.apply(
         lambda x: calc.get_next_day_return(x['Ticker'], x['Date'])['vol_chg'], axis=1)
     
+    df = df.dropna()
+    
     return df
 
 def consolidate(files):
