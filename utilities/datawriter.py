@@ -65,7 +65,10 @@ def consolidate(files):
     df_list = []
 
     for file in files:
-        df = pd.read_csv(file, index_col=None, header=0)
+        print(file)
+        # try:
+        df = pd.read_csv(file, index_col=None, header=0, encoding_errors='backslashreplace', on_bad_lines='warn')
+        # except:
         df_list.append(df)
 
     return pd.concat(df_list, axis=0, ignore_index=True)
