@@ -10,6 +10,8 @@ Field project for HKU **FINA 4350 - Text Analytics and Natural Language Processi
 > - `REDDIT_CLIENT_SECRET`
 > - HUGGINGFACE_TOKEN
 
+Please note: data must be placed in the "processed" directory!
+
 ## Scraping data from Reddit
 ```
 python3 1-scraper.py
