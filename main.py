@@ -9,8 +9,7 @@ regressions = importlib.import_module('models.regressions')
 # Configure directory names for data download, processed files, and final results
 config_dirs = {
     'data': 'data',
-    'processed': 'processed',
-    'results': 'results'
+    'processed': 'processed'
 }
 
 # Create aforementioned directories
